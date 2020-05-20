@@ -33,4 +33,8 @@ public class Player {
         this.attemptMatch = attemptMatch;
     }
 
+    public int getElapsedtime() {
+        return 0;
+    }
+
 }

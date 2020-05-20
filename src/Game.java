@@ -21,7 +21,7 @@ public class Game {
 
     }
 
-    public void startGame() throws  InterruptedException {
+    public void startGame() throws FileNotFoundException, InterruptedException, ExecutionException {
         Graph graph = new Graph();
 
         //create points
@@ -61,9 +61,93 @@ public class Game {
             System.out.println("The winner is: Player "+playerList.get(winner).getPlayerId());
         }
 
+        printPoint(graph);
+        printEdgeByPlayer(playerList);
+        printResult(playerList);
 
     }
 
+    public void printPoint(Graph graph) throws FileNotFoundException {
+        List<String> headersList = Arrays.asList("INDEX", "x-Coordinate", "y-Coordinate", "Is Used (Matched)");
+        DecimalFormat df = new DecimalFormat( "##0.0000000000000" );
+        List<List<String>> rowsList = new ArrayList<>();
+        for (int i=0; i<graph.pointList.size(); i++) {
+            Point point = graph.getPointList().get(i);
+            List<String> newList = new ArrayList<>();
+            newList.add(Integer.toString(i));
+            newList.add(df.format(point.getxCoor()));
+            newList.add(df.format(point.getyCoor()));
+            Boolean isUsed = point.isUsed();
+            newList.add(isUsed.toString());
+            rowsList.add(newList);
+        }
+        Board board = new Board(100);
+        String tableString = board.setInitialBlock(new Table(board, 80, headersList, rowsList).tableToBlocks()).build().getPreview();
+        PrintWriter writer =null;
+        writer = new PrintWriter(new File("D:\\point.txt"));
+        System.out.println("Printing pointlist>>>");
+        writer.write(tableString);
+        writer.flush();
+        writer.close();
+    }
+
+    public void printResult(List<Player> playerList) throws FileNotFoundException {
+        List<String> headersList = Arrays.asList("ID", "Name", "Edge Matches", "Elapsed time (ms)");
+        List<List<String>> rowsList = new ArrayList<>();
+        for (int i=0; i<playerList.size(); i++) {
+            Player player = playerList.get(i);
+            List<String> newList = new ArrayList<>();
+            newList.add(Integer.toString(player.getPlayerId()));
+            newList.add(player.getPlayerName());
+            newList.add(Integer.toString(player.getEdgeList().size()));
+            newList.add(Long.toString(player.getElapsedtime()));
+            rowsList.add(newList);
+        }
+        Board board = new Board(100);
+        String tableString = board.setInitialBlock(new Table(board, 80, headersList, rowsList).tableToBlocks()).build().getPreview();
+        PrintWriter writer =null;
+        writer = new PrintWriter(new File("D:\\result.txt"));
+        System.out.println("Printing result >>>");
+        writer.write(tableString);
+        writer.flush();
+        writer.close();
+    }
+
+
+    public void printEdgeByPlayer(List<Player> playerList) throws FileNotFoundException {
+        List<String> headersList = Arrays.asList("INDEX", "A","x-Coordinate", "y-Coordinate","B","x-Coordinate", "y-Coordinate","Matched By");
+        DecimalFormat df = new DecimalFormat( "##0.0000000000000" );
+        int ind=1;
+        List<List<String>> rowsList = new ArrayList<>();
+        for (int i=0; i<playerList.size(); i++) {
+            Player player = playerList.get(i);
+            for (int y=0;y<player.getEdgeList().size();y++){
+                List<String> newList = new ArrayList<>();
+                Edge edge = player.getEdgeList().get(y);
+                Point a = edge.getA();
+                Point b = edge.getB();
+                newList.add(Integer.toString(ind));
+                newList.add(" A ");
+                newList.add(df.format(a.getxCoor()));
+                newList.add(df.format(a.getyCoor()));
+                newList.add(" B ");
+                newList.add(df.format(b.getxCoor()));
+                newList.add(df.format(b.getyCoor()));
+                newList.add(Integer.toString(player.getPlayerId()));
+                rowsList.add(newList);
+                ind++;
+
+            }
+        }
+        Board board = new Board(150);
+        String tableString = board.setInitialBlock(new Table(board, 150, headersList, rowsList).tableToBlocks()).build().getPreview();
+        PrintWriter writer =null;
+        writer = new PrintWriter(new File("D:\\edge.txt"));
+        System.out.println("Printing edgelist>>>");
+        writer.write(tableString);
+        writer.flush();
+        writer.close();
+    }
 
     public int getThreadNum() {
         return threadNum;

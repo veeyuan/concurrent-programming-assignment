@@ -2,7 +2,7 @@ import java.util.concurrent.Callable;
 
 import static java.lang.Thread.sleep;
 
-public class PlayGame implements Callable {
+public class PlayGame implements Callable<Boolean> {
     Player player;
     Graph graph;
     Point A;

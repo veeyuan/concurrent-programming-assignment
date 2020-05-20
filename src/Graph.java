@@ -58,6 +58,7 @@ public class Graph {
         Point point = pointList.get(pickPointIndex);
         boolean isSuccessfullyLocked = point.lock.tryLock();
         if (!isSuccessfullyLocked){
+            //point is being accessed by another thread hence fail to lock
             System.out.println("Fails to lock -> pick another points");
             return pickPoint();
         }
