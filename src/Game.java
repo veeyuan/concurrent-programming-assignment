@@ -34,7 +34,23 @@ public class Game {
         for (int i=0;i<playerList.size();i++){
             callables.add(new PlayGame(playerList.get(i),graph));
         }
-         executor.invokeAll(callables);
+        long startTime = System.nanoTime();
+        List<Future<Boolean>> futures = executor.invokeAll(callables,this.time,TimeUnit.MILLISECONDS);
+        for(Future<Boolean> future: futures) {
+            try {
+                boolean moreThan = future.get();
+                System.out.println("Is more than 20? >>> "+moreThan);
+                if (moreThan){
+                    future.cancel(true);
+                }
+            } catch (ExecutionException e) {
+                System.out.println("Execution Error");
+            } catch (CancellationException e) {
+                System.out.println("Time's Out then cancel >>>");
+                future.cancel(true);
+            }
+
+        }
 
         executor.shutdownNow();
         while (!executor.isTerminated()){

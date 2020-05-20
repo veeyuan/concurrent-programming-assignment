@@ -16,10 +16,16 @@ public class PlayGame implements Callable<Boolean> {
     @Override
     public Boolean call() throws Exception {
 
+        long startTime = System.nanoTime();
+
         while (!graph.isGameEnd() ){
             try {
                 if (player.getAttemptMatch()>20 ){
                     System.out.println( "Player "+player.getPlayerId() +" stop matching >>> "+player.getEdgeList().size()+" matched...");
+                    long endTime = System.nanoTime();
+                    long timeElapsed = endTime - startTime;
+                    System.out.println("Player "+player.getPlayerId()+"- Execution time in milliseconds : " + timeElapsed / 1000000);
+                    player.setElapsedtime(timeElapsed/1000000);
                     return true;
                 }else{
                     A = graph.pickPoint();
@@ -36,6 +42,10 @@ public class PlayGame implements Callable<Boolean> {
                             System.out.println("Interrupted >>>");
                         }
                         if (graph.isGameEnd()){
+                            long endTime = System.nanoTime();
+                            long timeElapsed = endTime - startTime;
+                            System.out.println("Player "+player.getPlayerId()+"- Execution time in milliseconds : " + timeElapsed / 1000000);
+                            player.setElapsedtime(timeElapsed/1000000);
                             return false;
                         }
                     }else{
@@ -47,7 +57,9 @@ public class PlayGame implements Callable<Boolean> {
                 e.printStackTrace();
             }
         }
-
+        long endTime = System.nanoTime();
+        long timeElapsed = endTime - startTime;
+        System.out.println("Player "+player.getPlayerId()+"- Execution time in milliseconds : " + timeElapsed / 1000000);
         return false;
     }
 

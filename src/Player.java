@@ -6,6 +6,7 @@ public class Player {
     private int playerId;
     List<Edge> edgeList=new ArrayList<>();
     private int attemptMatch = 0;
+    private long elapsedtime;
 
 
     public Player(String playerName, int playerId) {
@@ -33,8 +34,13 @@ public class Player {
         this.attemptMatch = attemptMatch;
     }
 
-    public int getElapsedtime() {
-        return 0;
+    public long getElapsedtime() {
+        return elapsedtime;
     }
+
+    public void setElapsedtime(long elapsedtime) {
+        this.elapsedtime = elapsedtime;
+    }
+
 
 }

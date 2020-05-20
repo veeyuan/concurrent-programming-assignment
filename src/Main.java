@@ -28,8 +28,13 @@ public class Main {
         }
         System.out.println("Number of points created :"+pointNum);
 
-        Game game = new Game(pointNum,playerNum,1000,playerList);
+        System.out.print("Time (in ms) for game execution: ");
+        int time = in.nextInt();
+        System.out.println("-----------------------------------");
+
+        Game game = new Game(pointNum,playerNum,time,playerList);
         game.startGame();
+
 
     }
 }
