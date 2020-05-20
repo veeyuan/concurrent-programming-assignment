@@ -2,10 +2,18 @@ public class Edge {
 
     private Point A;
     private Point B;
+    private int playerId;
 
-    public Edge(Point A, Point B) {
-        this.A = A;
-        this.B = B;
+    //for overall
+    public Edge (Point pointA, Point pointB, int playerId){
+        this.A=pointA;
+        this.B=pointB;
+        this.playerId=playerId;
+    }
+    // for player
+    public Edge (Point pointA, Point pointB){
+        this.A=pointA;
+        this.B=pointB;
     }
 
     public void setA(Point A) {
@@ -24,7 +32,4 @@ public class Edge {
         return B;
     }
     
-    public String toString(){
-        return A.getID() + "-" + B.getID();
-    }
 }
