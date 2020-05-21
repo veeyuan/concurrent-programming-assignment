@@ -34,7 +34,6 @@ public class Game {
         for (int i=0;i<playerList.size();i++){
             callables.add(new PlayGame(playerList.get(i),graph));
         }
-        long startTime = System.nanoTime();
         List<Future<Boolean>> futures = executor.invokeAll(callables,this.time,TimeUnit.MILLISECONDS);
         for(Future<Boolean> future: futures) {
             try {
@@ -56,11 +55,13 @@ public class Game {
         while (!executor.isTerminated()){
         }
 
-        //to determine winner - this part need to be revised
+        //to determine winner - this part may need to be revised
         int highestScore=playerList.get(0).getEdgeList().size();
         int winner = 0;
         int sameHighest = 0;
-        for (int i=0;i<playerList.size();i++){
+        Player firstplayer = playerList.get(0);
+        System.out.println("Player "+firstplayer.getPlayerId()+" gets "+firstplayer.getEdgeList().size()+" matches...");
+        for (int i=1;i<playerList.size();i++){
             Player player = playerList.get(i);
             System.out.println("Player "+player.getPlayerId()+" gets "+player.getEdgeList().size()+" matches...");
             if (player.getEdgeList().size()>highestScore){
@@ -165,31 +166,5 @@ public class Game {
         writer.close();
     }
 
-    public int getThreadNum() {
-        return threadNum;
-    }
 
-    public void setThreadNum(int threadNum) {
-        this.threadNum = threadNum;
-    }
-
-    public int getPointNum() {
-        return pointNum;
-    }
-
-    public void setPointNum(int pointNum) {
-        this.pointNum = pointNum;
-    }
-
-    public double getTime() {
-        return time;
-    }
-
-    public void setTime(int time) {
-        this.time = time;
-    }
-
-    public List<Player> getPlayerList() {
-        return playerList;
-    }
 }

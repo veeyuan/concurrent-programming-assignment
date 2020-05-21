@@ -14,7 +14,7 @@ public class PlayGame implements Callable<Boolean> {
     }
 
     @Override
-    public Boolean call() throws Exception {
+    public Boolean call()  {
 
         long startTime = System.nanoTime();
 
@@ -34,8 +34,6 @@ public class PlayGame implements Callable<Boolean> {
                     if (success){
                         Edge playerEdge = new Edge(A,B);
                         player.getEdgeList().add(playerEdge);
-/*                        Edge newEdge = new Edge(A,B,player.getPlayerId());
-                        graph.edgeList.add(newEdge);*/
                         try {
                             sleep(300);
                         }catch (InterruptedException e){

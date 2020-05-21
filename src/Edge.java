@@ -4,12 +4,7 @@ public class Edge {
     private Point B;
     private int playerId;
 
-    //for overall
-    public Edge (Point pointA, Point pointB, int playerId){
-        this.A=pointA;
-        this.B=pointB;
-        this.playerId=playerId;
-    }
+
     // for player
     public Edge (Point pointA, Point pointB){
         this.A=pointA;

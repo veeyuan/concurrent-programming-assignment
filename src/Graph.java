@@ -5,9 +5,6 @@ import java.util.Random;
 
 public class Graph {
     List<Point> pointList= new ArrayList<>();
-    List<Edge> edgeList=new ArrayList<>();
-    /* private static boolean gameOver = false;
-    */
     private static boolean gameEnd = false; //win
     static int matchedPointNum=0;
 
@@ -17,16 +14,9 @@ public class Graph {
         return  pointList;
     }
 
-    public void setPointList(List<Point> pointList) {
-        this.pointList = pointList;
-    }
 
     public int getPointListSize(){
         return pointList.size();
-    }
-
-    public List<Edge> getEdgeList() {
-        return edgeList;
     }
 
     public Point createPoints(List<Point> pointList){
