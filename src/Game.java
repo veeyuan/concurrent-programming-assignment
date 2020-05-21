@@ -25,7 +25,7 @@ public class Game {
         Graph graph = new Graph();
 
         //create points
-        graph.createPointList(graph.getPointList(),this.pointNum);
+        List <Point> pointList = graph.createPointList(graph.getPointList(),this.pointNum);
 
         ExecutorService executor = Executors.newFixedThreadPool(this.threadNum);
 
@@ -78,6 +78,10 @@ public class Game {
             System.out.println("The winner is: Player "+playerList.get(winner).getPlayerId());
         }
 
+        //Initialise PlotPointsFrame
+        PlotPointsFrame plotPointsFrame = new PlotPointsFrame(pointList, playerList);
+        plotPointsFrame.setVisible(true);
+        
         printPoint(graph);
         printEdgeByPlayer(playerList);
         printResult(playerList);
