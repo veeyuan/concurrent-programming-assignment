@@ -21,8 +21,8 @@ public class Graph {
 
     public Point createPoints(List<Point> pointList){
         Random randGenerator = new Random();
-        double xCoor = randGenerator.nextDouble();
-        double yCoor = randGenerator.nextDouble();
+        double xCoor = randGenerator.nextDouble() * 1000;
+        double yCoor = randGenerator.nextDouble() * 1000;
         Point newPoint = new Point(xCoor,yCoor);
         //to avoid duplicate points are created - no two points are overlapped
         if (pointList.contains(newPoint)){
