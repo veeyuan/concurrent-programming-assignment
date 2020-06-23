@@ -8,7 +8,9 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -21,13 +23,35 @@ public class PlotPoints extends javax.swing.JPanel {
      */
     private static List<Point> pointList;
     private static List<Player> playerList;
+    Graphics g;
+    int xLength;
+    int yLength;
     
-    public PlotPoints(List<Point> pointList, List<Player> playerList) {
+    private PlotPointsFrame frame;
+    
+    private Map<Integer, Color> mapColors;
+    
+    public PlotPoints(List<Point> pointList, List<Player> playerList, PlotPointsFrame frame) {
         this.pointList = pointList;
         this.playerList = playerList;
+        this.frame = frame;
         initComponents();
-    }
+        
+        //initialise HashMap to map integer (row) to a specific color
+        mapColors = new HashMap<Integer, Color>();                
 
+        for (int i=0; i<playerList.size(); i++) {
+            Player player = playerList.get(i);
+            //use random color for each player respectively
+                int R = (int) (Math.random( )*256);
+                int G = (int)(Math.random( )*256);
+                int B= (int)(Math.random( )*256);
+                Color randomColor = new Color(R, G, B);
+
+                mapColors.put(i, randomColor);
+        }
+    }
+      
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -49,7 +73,6 @@ public class PlotPoints extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    
     // x-axis coord constants
     public static final int X_AXIS_FIRST_X_COORD = 20; 
     public static final int X_AXIS_SECOND_X_COORD = 1040;
@@ -62,7 +85,7 @@ public class PlotPoints extends javax.swing.JPanel {
  
     //arrows of axis are represented with "hipotenuse" of 
     //triangle
-    // now we are define length of cathetas of that triangle
+    //define length of "hipotenuse" of that triangle
     public static final int FIRST_LENGHT = 10;
     public static final int SECOND_LENGHT = 5;
  
@@ -75,7 +98,7 @@ public class PlotPoints extends javax.swing.JPanel {
     @Override
     public void paintComponent(Graphics g){
         super.paintComponent(g);
-  
+        this.g = g;
         Graphics2D g2 = (Graphics2D) g;
   
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
@@ -104,7 +127,7 @@ public class PlotPoints extends javax.swing.JPanel {
            Y_AXIS_FIRST_Y_COORD + FIRST_LENGHT,
            Y_AXIS_X_COORD, Y_AXIS_FIRST_Y_COORD);
   
-        // draw origin Point
+        // origin Point
         g2.fillOval(
           X_AXIS_FIRST_X_COORD - (ORIGIN_COORDINATE_LENGHT / 2), 
           Y_AXIS_SECOND_Y_COORD - (ORIGIN_COORDINATE_LENGHT / 2),
@@ -121,14 +144,13 @@ public class PlotPoints extends javax.swing.JPanel {
         // numerate axis
         int xCoordNumbers = 1000;
         int yCoordNumbers = 1000;
-        int xLength = (X_AXIS_SECOND_X_COORD - X_AXIS_FIRST_X_COORD)
+        xLength = (X_AXIS_SECOND_X_COORD - X_AXIS_FIRST_X_COORD)
             / xCoordNumbers;
-        int yLength = (Y_AXIS_SECOND_Y_COORD - Y_AXIS_FIRST_Y_COORD)
+        yLength = (Y_AXIS_SECOND_Y_COORD - Y_AXIS_FIRST_Y_COORD)
             / yCoordNumbers;
   
         // draw x-axis numbers
         for(int i = 0; i <= xCoordNumbers; i+= 50) {
-        // int iLength = (int) (i * xLength);
          g2.drawLine(X_AXIS_FIRST_X_COORD + (i * xLength),
            X_AXIS_Y_COORD - SECOND_LENGHT,
            X_AXIS_FIRST_X_COORD + (i * xLength),
@@ -148,20 +170,24 @@ public class PlotPoints extends javax.swing.JPanel {
            Y_AXIS_X_COORD - AXIS_STRING_DISTANCE, 
            Y_AXIS_SECOND_Y_COORD - (i * yLength));
         }
-        
-            
+                    
         for(int i = 0; i < pointList.size(); i ++){
-            System.out.println("---"+pointList.get(i).getxCoor());
             drawPointOnPanel(pointList.get(i), g, xLength, yLength);
         }
         
+        //draw line for each player's connected edges
         for (int i=0; i<playerList.size(); i++) {
             Player player = playerList.get(i);
-            int R = (int) (Math.random( )*256);
-            int G = (int)(Math.random( )*256);
-            int B= (int)(Math.random( )*256);
-            Color randomColor = new Color(R, G, B);
-            g.setColor(randomColor);
+            g.setColor(mapColors.get(i));
+
+            //to avoid table getting added with repeated rows
+            //after the JFrame is minimised and reopened
+            if(frame.getTable().getRowCount() < playerList.size()){
+                frame.getTable().addRow(new Object[]{
+                    player.getPlayerName()," ", player.getEdgeList().size()
+                }); 
+            }
+
             for (int y=0;y<player.getEdgeList().size();y++){
                 Edge edge = player.getEdgeList().get(y);
                 Point a = edge.getA();
@@ -177,8 +203,12 @@ public class PlotPoints extends javax.swing.JPanel {
                 final int yBPlot = (int) (Y_AXIS_SECOND_Y_COORD - (yB * yLength));
                 g2.drawLine(xAPlot, yAPlot, xBPlot, yBPlot);
             }
+
         }
         
+        //changeColor for each player's 'Color' column 
+        //to identify color of line by each player
+        frame.changeColor(frame.getJTable(), mapColors);
     }
 
     

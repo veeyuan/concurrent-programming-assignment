@@ -3,9 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -16,10 +29,12 @@ public class PlotPointsFrame extends javax.swing.JFrame {
     /**
      * Creates new form PlotPointsFrame
      */
-    GridBagLayout layout = new GridBagLayout();
+    BorderLayout layout = new BorderLayout();
     PlotPoints panel;
     private static List<Point> pointList;
     private static List<Player> playerList;
+    
+    DefaultTableModel model;
     
     public PlotPointsFrame(List<Point> pointList, List<Player> playerList) {
         this.pointList = pointList;
@@ -28,17 +43,61 @@ public class PlotPointsFrame extends javax.swing.JFrame {
         initComponents();
         
         this.setResizable(false);
-        this.setAlwaysOnTop(true);
-        
-        panel = new PlotPoints(pointList, playerList);
+        this.setAlwaysOnTop(true);    
+
+        //initialize PlotPoints JPanel
+        panel = new PlotPoints(pointList, playerList, PlotPointsFrame.this);
         plotPointsPanel.setLayout(layout);
-        GridBagConstraints c = new GridBagConstraints();
-        c.gridx = 0;
-        c.gridy = 0;
-        plotPointsPanel.add(panel, c);
-        panel.setVisible(true);     
+
+        JPanel plotPanel = new JPanel();
+        plotPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        plotPanel.add(panel);                   
+        
+        //set defaultTableModel for table of legend
+        model = new DefaultTableModel();
+        legendTable.setModel(model);
+        model.addColumn("Player");
+        model.addColumn("Color");
+        model.addColumn("No of Matched Edges");
+        
+        plotPointsPanel.add(plotPanel, BorderLayout.SOUTH);    
+        
+        panel.setVisible(true); 
+    }
+    
+    public DefaultTableModel getTable(){
+        return model;
+    }
+    
+    public JTable getJTable(){
+        return legendTable;
     }
 
+    //to set background color for each cell to represent the line color of a particular player
+    public void changeColor(JTable table, Map<Integer, Color> mapColors){         
+        table.setDefaultRenderer(Object.class, new DefaultTableCellRenderer(){
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                Object value, boolean isSelected, boolean hasFocus, int row,
+                int column){
+                Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                Color color = mapColors.get(row);
+                if (color != null) {
+                    if(column == 1){
+                        cell.setBackground(color);
+                    }
+                    else{
+                        cell.setBackground(Color.WHITE);
+                    }
+                } else {
+                    cell.setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
+                }
+                return this;
+            }
+        });              
+    }
+    
+  
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -49,18 +108,86 @@ public class PlotPointsFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         plotPointsPanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        legendTable = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        resultLogButton = new javax.swing.JButton();
+        pointLogButton = new javax.swing.JButton();
+        edgeLogButton = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        legendTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane1.setViewportView(legendTable);
+
+        jLabel1.setText("Results for Matched Edges:");
+
+        resultLogButton.setText("Result Log File");
+        resultLogButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resultLogButtonActionPerformed(evt);
+            }
+        });
+
+        pointLogButton.setText("Points Log File");
+        pointLogButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                pointLogButtonActionPerformed(evt);
+            }
+        });
+
+        edgeLogButton.setText("Edge Log File");
+        edgeLogButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                edgeLogButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Log Files in D Drive:");
 
         javax.swing.GroupLayout plotPointsPanelLayout = new javax.swing.GroupLayout(plotPointsPanel);
         plotPointsPanel.setLayout(plotPointsPanelLayout);
         plotPointsPanelLayout.setHorizontalGroup(
             plotPointsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1100, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, plotPointsPanelLayout.createSequentialGroup()
+                .addContainerGap(1085, Short.MAX_VALUE)
+                .addGroup(plotPointsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 384, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel2)
+                    .addGroup(plotPointsPanelLayout.createSequentialGroup()
+                        .addComponent(edgeLogButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(pointLogButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(resultLogButton))))
         );
         plotPointsPanelLayout.setVerticalGroup(
             plotPointsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1100, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, plotPointsPanelLayout.createSequentialGroup()
+                .addContainerGap(809, Short.MAX_VALUE)
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
+                .addGroup(plotPointsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(resultLogButton)
+                    .addComponent(pointLogButton)
+                    .addComponent(edgeLogButton))
+                .addGap(48, 48, 48)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(25, 25, 25))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -78,6 +205,39 @@ public class PlotPointsFrame extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void resultLogButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resultLogButtonActionPerformed
+        // TODO add your handling code here:
+        //to open up edge log file in D drive
+        String FolderName="D:/result.txt";//Write your complete path here
+        try {
+            Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + FolderName);
+         } catch (IOException ex) {
+                  Logger.getLogger(PlotPointsFrame.class.getName()).log(Level.SEVERE, null, ex);
+         }
+    }//GEN-LAST:event_resultLogButtonActionPerformed
+
+    private void pointLogButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pointLogButtonActionPerformed
+        // TODO add your handling code here:
+        //to open up point log file in D drive
+        String FolderName="D:/point.txt";//Write your complete path here
+        try {
+            Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + FolderName);
+         } catch (IOException ex) {
+                  Logger.getLogger(PlotPointsFrame.class.getName()).log(Level.SEVERE, null, ex);
+         }
+    }//GEN-LAST:event_pointLogButtonActionPerformed
+
+    private void edgeLogButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_edgeLogButtonActionPerformed
+        // TODO add your handling code here:
+        //to open up edge log file in D drive
+        String FolderName="D:/edge.txt";//Write your complete path here
+        try {
+            Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + FolderName);
+         } catch (IOException ex) {
+                  Logger.getLogger(PlotPointsFrame.class.getName()).log(Level.SEVERE, null, ex);
+         }
+    }//GEN-LAST:event_edgeLogButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -115,6 +275,13 @@ public class PlotPointsFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton edgeLogButton;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable legendTable;
     private javax.swing.JPanel plotPointsPanel;
+    private javax.swing.JButton pointLogButton;
+    private javax.swing.JButton resultLogButton;
     // End of variables declaration//GEN-END:variables
 }
